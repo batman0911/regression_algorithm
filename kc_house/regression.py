@@ -27,8 +27,7 @@ def predict(X, w):
 
 
 class Tmp:
-    def __int__(self,
-                name='Linh'):
+    def __init__(self, name):
         self.name = name
 
     def show_name(self):
@@ -36,7 +35,7 @@ class Tmp:
 
 
 class RegressionOpt:
-    def __int__(self,
+    def __init__(self,
                 solver='gd',
                 tol=1e-4,
                 max_iter=10000,
