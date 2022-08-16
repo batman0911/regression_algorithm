@@ -26,9 +26,22 @@ def predict(X, w):
     return np.dot(X, w)
 
 
+def back_tracking_step_size(w, X, y, grad, t_init, alpha, beta):
+    step_size = t_init
+    count = 0
+    old_cost = loss_func(w, X, y)
+    grad_prd = alpha * np.dot(grad.T, grad)
+    while loss_func(update(w, step_size, grad), X, y) > \
+            old_cost - step_size * grad_prd:
+        step_size = beta * step_size
+        count += 1
+    return step_size, count
+
+
 class RegressionOpt:
     def __init__(self,
                  solver='gd',
+                 backtracking=False,
                  tol=1e-4,
                  max_iter=10000,
                  step_size=1,
@@ -39,7 +52,9 @@ class RegressionOpt:
                  X_test=None,
                  y_test=None,
                  bench_mode=False,
-                 terminate=False):
+                 terminate=True):
+        self.solver = solver
+        self.backtracking = backtracking
         self.tol = tol
         self.max_iter = max_iter
         self.step_size = step_size
@@ -55,20 +70,30 @@ class RegressionOpt:
         self.count = 0
         self.bench_mode = bench_mode
         self.terminate = terminate
+        self.inner_count = 0
+
+    def setup(self):
+        grn = np.linalg.norm(gradient(self.w, self.X_train, self.y_train))
+        loss = loss_func(self.w, self.X_train, self.y_train)
+        self.grad_norm_list.append(grn)
+        self.loss_func_list.append(loss)
 
     def fit_gd(self):
         t = -self.step_size / self.X_train.shape[0]
         while self.count < self.max_iter:
             self.count += 1
             grad = gradient(self.w, self.X_train, self.y_train)
+            if self.backtracking:
+                t, inner_count = back_tracking_step_size(self.w, self.X_train, self.y_train, grad,
+                                                         t, 1e-4, 0.5)
+                self.inner_count += 1
             self.w = update(self.w, t, grad)
             grn = np.linalg.norm(grad)
             if not self.bench_mode:
                 self.grad_norm_list.append(grn)
                 self.loss_func_list.append(loss_func(self.w, self.X_train, self.y_train))
-            if not self.terminate:
-                if grn < self.tol:
-                    break
+            if self.terminate and grn < self.tol:
+                break
         return self.w
 
     def fit_newton(self):
@@ -82,7 +107,7 @@ class RegressionOpt:
             self.loss_func_list.append(loss_func(self.w, self.X_train, self.y_train))
             grn = np.linalg.norm(grad)
             self.grad_norm_list.append(grn)
-            if grn < self.tol:
+            if self.terminate and grn < self.tol:
                 break
         return self.w
 
@@ -99,10 +124,13 @@ class RegressionOpt:
             # v = w[1]
             w[0] = w[1]
             grad = gradient(v, self.X_train, self.y_train)
+            if self.backtracking:
+                t = back_tracking_step_size(self.w, self.X_train, self.y_train, grad,
+                                            t, 1e-4, 0.5)[0]
             w[1] = update(v, t, -grad)
             self.w = w[1]
             self.loss_func_list.append(loss_func(w[1], self.X_train, self.y_train))
             grn = np.linalg.norm(grad)
             self.grad_norm_list.append(grn)
-            if grn < self.tol:
+            if self.terminate and grn < self.tol:
                 break
