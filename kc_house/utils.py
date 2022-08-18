@@ -41,7 +41,7 @@ def loss_func(X, y, w):
 
 def grad(X, y, w):
     # return np.dot(X.T, np.dot(X,w)-y)/X.shape[0]
-    return np.dot(X.T, np.dot(X, w) - y)
+    return np.dot(X.T, np.dot(X, w) - y) / X.shape[0]
 
 def hess(X):
     return np.dot(X.T, X)/X.shape[0]
@@ -102,11 +102,12 @@ def Newton(X, y, w_init, check_after, max_iter, tol=1e-4):
     for i in range(max_iter):
         g = grad(X,y,w)
         h = hess(X)
-        w = w - np.dot(np.linalg.inv(h), g)
-
+        p = np.linalg.solve(h, g)
+        w = w - p
+        # w = w - np.dot(np.linalg.inv(h), g)
         if i % check_after == 0:
-            # loss.append(loss_func(X, y, w))
-            # norm_grad.append(np.linalg.norm(g))
+            loss.append(loss_func(X, y, w))
+            norm_grad.append(np.linalg.norm(g))
             if np.linalg.norm(g) < tol:
                 break
     return [w, i, norm_grad, loss]
