@@ -38,6 +38,8 @@ def back_tracking_step_size(w, X, y, grad, t_init, alpha, beta):
     return step_size, count
 
 
+# def
+
 class RegressionOpt:
     def __init__(self,
                  solver='gd',
