@@ -26,7 +26,7 @@ def predict(X, w):
     return np.dot(X, w)
 
 
-def back_tracking_step_size(w, X, y, grad, t_init, alpha, beta):
+def back_tracking_step_size_gd(w, X, y, grad, t_init, alpha, beta):
     step_size = t_init
     count = 0
     old_cost = loss_func(w, X, y)
@@ -38,7 +38,20 @@ def back_tracking_step_size(w, X, y, grad, t_init, alpha, beta):
     return step_size, count
 
 
-# def
+def back_tracking_step_size_acc(w, v, X, y, grad, t_init, beta):
+    pass
+    gv = loss_func(v, X, y)
+    t = t_init
+    next_w = update(v, -t, grad)
+    d_w_v = next_w - v
+    count = 0
+    while loss_func(next_w, X, y) > gv + np.dot(grad.T, (w - v)) + 1 / (2 * t) * np.dot(d_w_v.T, d_w_v):
+        count += 1
+        t = beta * t
+        next_w = update(v, -t, grad)
+        d_w_v = next_w - v
+    return t, count
+
 
 class RegressionOpt:
     def __init__(self,
@@ -93,9 +106,9 @@ class RegressionOpt:
             self.count += 1
             grad = gradient(self.w, self.X_train, self.y_train)
             if self.backtracking:
-                t, inner_count = back_tracking_step_size(self.w, self.X_train, self.y_train, grad,
-                                                         t_init, self.alpha, self.beta)
-                self.inner_count += 1
+                t, inner_count = back_tracking_step_size_gd(self.w, self.X_train, self.y_train, grad,
+                                                            t_init, self.alpha, self.beta)
+                self.inner_count += inner_count
             self.w = update(self.w, -t, grad)
             grn = np.linalg.norm(grad)
             if not self.bench_mode:
@@ -131,12 +144,12 @@ class RegressionOpt:
         while self.count < self.max_iter:
             self.count += 1
             v = w[1] + (self.count - 2) / (self.count + 1) * (w[1] - w[0])
-            # v = w[1]
             w[0] = w[1]
             grad = gradient(v, self.X_train, self.y_train)
             if self.backtracking:
-                t = back_tracking_step_size(self.w, self.X_train, self.y_train, grad,
-                                            t_init, self.alpha, self.beta)[0]
+                t, inner_count = back_tracking_step_size_acc(self.w, v, self.X_train, self.y_train, grad,
+                                                             t_init, self.beta)
+                self.inner_count += inner_count
             w[1] = update(v, -t, grad)
             self.w = w[1]
             self.loss_func_list.append(loss_func(w[1], self.X_train, self.y_train))
