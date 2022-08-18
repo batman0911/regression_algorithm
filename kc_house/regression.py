@@ -38,14 +38,13 @@ def back_tracking_step_size_gd(w, X, y, grad, t_init, alpha, beta):
     return step_size, count
 
 
-def back_tracking_step_size_acc(w, v, X, y, grad, t_init, beta):
-    pass
+def back_tracking_step_size_acc(v, X, y, grad, t_init, beta):
     gv = loss_func(v, X, y)
     t = t_init
     next_w = update(v, -t, grad)
     d_w_v = next_w - v
     count = 0
-    while loss_func(next_w, X, y) > gv + np.dot(grad.T, (w - v)) + 1 / (2 * t) * np.dot(d_w_v.T, d_w_v):
+    while loss_func(next_w, X, y) > gv + np.dot(grad.T, (next_w - v)) + 1 / (2 * t) * np.dot(d_w_v.T, d_w_v):
         count += 1
         t = beta * t
         next_w = update(v, -t, grad)
@@ -147,7 +146,7 @@ class RegressionOpt:
             w[0] = w[1]
             grad = gradient(v, self.X_train, self.y_train)
             if self.backtracking:
-                t, inner_count = back_tracking_step_size_acc(self.w, v, self.X_train, self.y_train, grad,
+                t, inner_count = back_tracking_step_size_acc(v, self.X_train, self.y_train, grad,
                                                              t_init, self.beta)
                 self.inner_count += inner_count
             w[1] = update(v, -t, grad)
