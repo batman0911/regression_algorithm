@@ -34,11 +34,14 @@ def load_data(file_name):
     return X, y
 
 def loss_func(X, y, w):
-    loss = .5 * (np.linalg.norm(y-np.dot(X,w)))**2
-    return loss/X.shape[0]
+    # loss = .5 * (np.linalg.norm(y-np.dot(X,w)))**2
+    # return loss/X.shape[0]
+    eps = y - np.dot(X, w)
+    return float(np.dot(eps.T, eps) / 2)
 
 def grad(X, y, w):
-    return np.dot(X.T, np.dot(X,w)-y)/X.shape[0]
+    # return np.dot(X.T, np.dot(X,w)-y)/X.shape[0]
+    return np.dot(X.T, np.dot(X, w) - y)
 
 def hess(X):
     return np.dot(X.T, X)/X.shape[0]
@@ -51,13 +54,13 @@ def GD(X, y, w_init, step_size, check_after, max_iter, tol=1e-4):
     w = w_init
     norm_grad = []
     loss = []
+    step_size = step_size / X.shape[0]
     for i in range(max_iter):
         g = grad(X,y,w)
         w = w - step_size * g
-
         if i % check_after == 0:
-            # loss.append(loss_func(X, y, w))
-            # norm_grad.append(np.linalg.norm(g))
+            loss.append(loss_func(X, y, w))
+            norm_grad.append(np.linalg.norm(g))
             if np.linalg.norm(g) < tol:
                 break
     return [w, i, norm_grad, loss]
