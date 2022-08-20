@@ -125,8 +125,9 @@ class RegressionOpt:
             H = hessian(self.X_train)
             p = cal_direction(H, grad)
             self.w = update(self.w, -t, p)
-            self.loss_func_list.append(loss_func(self.w, self.X_train, self.y_train) / self.X_train.shape[0])
-            grn = np.linalg.norm(grad) / self.X_train.shape[0]
+            if not self.bench_mode:
+                self.loss_func_list.append(loss_func(self.w, self.X_train, self.y_train) / self.X_train.shape[0])
+                grn = np.linalg.norm(grad) / self.X_train.shape[0]
             self.grad_norm_list.append(grn)
             if self.terminate and grn < self.tol:
                 break
@@ -151,8 +152,9 @@ class RegressionOpt:
                 self.inner_count += inner_count
             w[1] = update(v, -t, grad)
             self.w = w[1]
-            self.loss_func_list.append(loss_func(w[1], self.X_train, self.y_train) / self.X_train.shape[0])
             grn = np.linalg.norm(grad) / self.X_train.shape[0]
-            self.grad_norm_list.append(grn)
+            if not self.bench_mode:
+                self.loss_func_list.append(loss_func(w[1], self.X_train, self.y_train) / self.X_train.shape[0])
+                self.grad_norm_list.append(grn)
             if self.terminate and grn < self.tol:
                 break

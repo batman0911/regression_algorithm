@@ -137,3 +137,22 @@ hay $w^{(1)} = (X^T X)^{-1}X^T X y$, chính là công thức nghiệm tối ưu
 ---
 ## Số bước hội tụ
 ![](./data/output/conv_loops.png)
+
+---
+## Thời gian tính toán
+| Thuật toán | Thời gian |  Tỉ lệ với sklearn
+|-------------------|----------------|--------------|
+| GD                | 6.3345         |  355.3826    |
+| Accelerated GD    | 0.5396         |  30.2707     |
+| GD backtracking   | 1.0644         |  59.7146     |
+| AGD backtracking  | 0.4574         |  25.6686     |
+| Newton            | 0.0080         |  0.4476      |
+| Sklearn           | 0.0178         |  1           |
+
+---
+## Thời gian tính toán
+
+![](./data/output/time_cal.png)
+
+---
+## Q & A
