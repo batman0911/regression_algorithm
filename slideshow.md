@@ -91,7 +91,7 @@ output:
 
 $w^{(1)} = w^{(0)} - (X^T X)^{-1} (X^T X w^{(0)} - X^T y)$
 
-hay $w^{(1)} = (X^T X)^{-1}X^T X y$, chính là công thức nghiệm tối ưu
+hay $w^{(1)} = (X^T X)^{-1}X^T y$, chính là công thức nghiệm tối ưu
 
 - Nghĩa là, với điểm bắt đầu bất kì và độ dài bước bằng 1, thuật toán Newton cho nghiệm tối ưu sau chỉ 1 bước cập nhật!
 
@@ -104,7 +104,7 @@ hay $w^{(1)} = (X^T X)^{-1}X^T X y$, chính là công thức nghiệm tối ưu
 
 - GD backtracking: $t = 128$, $\beta = 0.5$
 
-- Accelerated GD: $t = 0.5$
+- Accelerated GD: $t = 0.6$
 
 - Accelerated GD backtracking: $t = 3$, $\beta = 0.5$
 
@@ -129,7 +129,7 @@ hay $w^{(1)} = (X^T X)^{-1}X^T X y$, chính là công thức nghiệm tối ưu
 | Thuật toán | Số bước hội tụ |
 |-------------------|----------------|
 | GD                | 4358           |
-| Accelerated GD    | 377            |
+| Accelerated GD    | 278            |
 | GD backtracking   | 286            |
 | AGD backtracking  | 161            |
 | Newton            | 2              |
@@ -142,12 +142,12 @@ hay $w^{(1)} = (X^T X)^{-1}X^T X y$, chính là công thức nghiệm tối ưu
 ## Thời gian tính toán
 | Thuật toán | Thời gian |  Tỉ lệ với sklearn
 |-------------------|----------------|--------------|
-| GD                | 6.3345         |  355.3826    |
-| Accelerated GD    | 0.5396         |  30.2707     |
-| GD backtracking   | 1.0644         |  59.7146     |
-| AGD backtracking  | 0.4574         |  25.6686     |
-| Newton            | 0.0080         |  0.4476      |
-| Sklearn           | 0.0178         |  1           |
+| GD                | 2.6423         |  123.0667    |
+| Accelerated GD    | 0.1749         |  8.1463      |
+| GD backtracking   | 1.0022         |  46.6787     |
+| AGD backtracking  | 0.5875         |  27.3649     |
+| Newton            | 0.0048         |  0.2254      |
+| Sklearn           | 0.0215         |  1           |
 
 ---
 ## Thời gian tính toán

@@ -6,8 +6,8 @@ def loss_func(w, X, y):
     return float(np.dot(eps.T, eps) / 2)
 
 
-def gradient(w, X, y):
-    return - np.dot(X.T, y) + np.dot(np.dot(X.T, X), w)
+def gradient(w, X, y, H):
+    return - np.dot(X.T, y) + np.dot(H, w)
 
 
 def hessian(X):
@@ -89,11 +89,13 @@ class RegressionOpt:
         self.inner_count = 0
         self.alpha = alpha
         self.beta = beta
+        self.H = None
 
         self.setup()
 
     def setup(self):
-        grn = np.linalg.norm(gradient(self.w, self.X_train, self.y_train)) / self.X_train.shape[0]
+        self.H = hessian(self.X_train)
+        grn = np.linalg.norm(gradient(self.w, self.X_train, self.y_train, self.H)) / self.X_train.shape[0]
         loss = loss_func(self.w, self.X_train, self.y_train) / self.X_train.shape[0]
         self.grad_norm_list.append(grn)
         self.loss_func_list.append(loss)
@@ -103,7 +105,7 @@ class RegressionOpt:
         t = t_init
         while self.count < self.max_iter:
             self.count += 1
-            grad = gradient(self.w, self.X_train, self.y_train)
+            grad = gradient(self.w, self.X_train, self.y_train, self.H)
             if self.backtracking:
                 t, inner_count = back_tracking_step_size_gd(self.w, self.X_train, self.y_train, grad,
                                                             t_init, self.alpha, self.beta)
@@ -119,11 +121,11 @@ class RegressionOpt:
 
     def fit_newton(self):
         t = self.step_size
+        # H = hessian(self.X_train)
         while self.count < self.max_iter:
             self.count += 1
-            grad = gradient(self.w, self.X_train, self.y_train)
-            H = hessian(self.X_train)
-            p = cal_direction(H, grad)
+            grad = gradient(self.w, self.X_train, self.y_train, self.H)
+            p = cal_direction(self.H, grad)
             self.w = update(self.w, -t, p)
             if not self.bench_mode:
                 self.loss_func_list.append(loss_func(self.w, self.X_train, self.y_train) / self.X_train.shape[0])
@@ -145,7 +147,7 @@ class RegressionOpt:
             self.count += 1
             v = w[1] + (self.count - 2) / (self.count + 1) * (w[1] - w[0])
             w[0] = w[1]
-            grad = gradient(v, self.X_train, self.y_train)
+            grad = gradient(v, self.X_train, self.y_train, self.H)
             if self.backtracking:
                 t, inner_count = back_tracking_step_size_acc(v, self.X_train, self.y_train, grad,
                                                              t_init, self.beta)
