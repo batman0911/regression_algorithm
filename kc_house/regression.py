@@ -90,22 +90,28 @@ class RegressionOpt:
         self.alpha = alpha
         self.beta = beta
         self.H = None
+        self.XTy = None
 
         self.setup()
 
     def setup(self):
         self.H = hessian(self.X_train)
+        self.XTy = np.dot(self.X_train.T, self.y_train)
         grn = np.linalg.norm(gradient(self.w, self.X_train, self.y_train, self.H)) / self.X_train.shape[0]
         loss = loss_func(self.w, self.X_train, self.y_train) / self.X_train.shape[0]
         self.grad_norm_list.append(grn)
         self.loss_func_list.append(loss)
+
+    def grad(self, w):
+        return np.dot(self.H, w) - self.XTy
 
     def fit_gd(self):
         t_init = self.step_size / self.X_train.shape[0]
         t = t_init
         while self.count < self.max_iter:
             self.count += 1
-            grad = gradient(self.w, self.X_train, self.y_train, self.H)
+            # grad = gradient(self.w, self.X_train, self.y_train, self.H)
+            grad = self.grad(self.w)
             if self.backtracking:
                 t, inner_count = back_tracking_step_size_gd(self.w, self.X_train, self.y_train, grad,
                                                             t_init, self.alpha, self.beta)
@@ -124,7 +130,8 @@ class RegressionOpt:
         # H = hessian(self.X_train)
         while self.count < self.max_iter:
             self.count += 1
-            grad = gradient(self.w, self.X_train, self.y_train, self.H)
+            # grad = gradient(self.w, self.X_train, self.y_train, self.H)
+            grad = self.grad(self.w)
             p = cal_direction(self.H, grad)
             self.w = update(self.w, -t, p)
             if not self.bench_mode:
@@ -147,7 +154,8 @@ class RegressionOpt:
             self.count += 1
             v = w[1] + (self.count - 2) / (self.count + 1) * (w[1] - w[0])
             w[0] = w[1]
-            grad = gradient(v, self.X_train, self.y_train, self.H)
+            # grad = gradient(v, self.X_train, self.y_train, self.H)
+            grad = self.grad(v)
             if self.backtracking:
                 t, inner_count = back_tracking_step_size_acc(v, self.X_train, self.y_train, grad,
                                                              t_init, self.beta)
