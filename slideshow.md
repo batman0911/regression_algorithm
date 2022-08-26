@@ -140,14 +140,19 @@ hay $w^{(1)} = (X^T X)^{-1}X^T y$, chính là công thức nghiệm tối ưu
 
 ---
 ## Thời gian tính toán
-| Thuật toán | Thời gian |  Tỉ lệ với sklearn
+
+Cấu hình benchmark: 
+- CPU: Intel® Core™ i5-10400 CPU @ 2.90GHz × 12
+- Memory: 16GB
+
+| Thuật toán | Thời gian(s) |  Tỉ lệ với sklearn
 |-------------------|----------------|--------------|
-| GD                | 2.6423         |  123.0667    |
-| Accelerated GD    | 0.1749         |  8.1463      |
-| GD backtracking   | 1.0022         |  46.6787     |
-| AGD backtracking  | 0.5875         |  27.3649     |
-| Newton            | 0.0048         |  0.2254      |
-| Sklearn           | 0.0215         |  1           |
+| GD                | 0.0509         |  4.6709      |
+| Accelerated GD    | 0.0067         |  0.6189      |
+| GD backtracking   | 0.2532         |  23.2542     |
+| AGD backtracking  | 0.0709         |  6.5090      |
+| Newton            | 0.0038         |  0.3459      |
+| Sklearn           | 0.0109         |  1           |
 
 ---
 ## Thời gian tính toán
