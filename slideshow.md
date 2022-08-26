@@ -51,11 +51,11 @@ output:
 ---
 ## Loss function, Gradient, Hessian
 
-- Loss function: $f(w) = 1/2 \lVert y - Xw \rVert ^2$
+- Loss function: $f(w) = \frac{1}{2N} \lVert y - Xw \rVert ^2$
 
-- Gradient: $\nabla f(w) = X^T X w - X^T y$
+- Gradient: $\nabla f(w) = \frac{1}{N} (X^T X w - X^T y)$
 
-- Hessian: $H = X^T X$
+- Hessian: $H = \frac{1}{N} X^T X$
 
 ---
 ## Thuật toán GD
